@@ -2,7 +2,6 @@ package cleanup
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"testing"
 )
@@ -67,7 +66,7 @@ func ExampleFunction(fail bool) (usefulthing *string, err error) {
 	return
 }
 
-func TestFail(t *testing.T) {
+func Test(t *testing.T) {
 	thing, err := ExampleFunction(true)
 
 	if err == nil {
@@ -84,23 +83,4 @@ func TestFail(t *testing.T) {
 		t.Errorf("second thing should be '%s' instead is '%s'", failedStr, things[2])
 	}
 
-	fmt.Println(err)
-}
-
-func TestSuccess(t *testing.T) {
-	thing, err := ExampleFunction(false)
-
-	if err != nil {
-		t.Error("err should return nil")
-	}
-
-	things := strings.Split(*thing, ":")
-
-	if things[1] != alwaysStr {
-		t.Errorf("second thing should be '%s' instead is '%s'", alwaysStr, things[1])
-	}
-
-	if things[2] != successStr {
-		t.Errorf("first thing should be '%s' instead is '%s'", successStr, things[2])
-	}
 }
