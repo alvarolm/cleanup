@@ -2,11 +2,9 @@ package cleanup
 
 type CleanTask func()
 
-type CleanErrTask func(err error)
-
 // Cleaner holds whatever needs to be done
 type Cleaner struct {
-	onerror []CleanErrTask
+	onerror []CleanTask
 	onnil   []CleanTask
 	always  []CleanTask
 	Errptr  *error
@@ -19,6 +17,21 @@ func (c *Cleaner) GetError() error {
 	return nil
 }
 
+func (c *Cleaner) ComplementOrSetErr(complementor func(mainErr error, complementErr ...error) error, complementErr error) {
+
+	ierr := c.GetError()
+	if ierr != nil {
+
+		c.SetReturnError(complementor(ierr, complementErr))
+
+	} else {
+
+		c.SetReturnError(complementErr)
+
+	}
+
+}
+
 func (c *Cleaner) SetReturnError(err error) {
 	*c.Errptr = err
 }
@@ -26,9 +39,9 @@ func (c *Cleaner) SetReturnError(err error) {
 // NewCleaner creates a cleanup instance,
 // use it at the beginning of your function
 // hooking up your error pointer.
-func NewCleaner(errPtr *error) (curecorder *Cleaner) {
-	curecorder = new(Cleaner)
-	curecorder.Errptr = errPtr
+func NewCleaner(errPtr *error) (c *Cleaner) {
+	c = new(Cleaner)
+	c.Errptr = errPtr
 	return
 }
 
@@ -44,14 +57,14 @@ func (c *Cleaner) Clean() {
 		}
 	} else {
 		for i := len(c.onerror) - 1; i >= 0; i-- {
-			(c.onerror[i])(*c.Errptr)
+			(c.onerror[i])()
 		}
 	}
 }
 
 // OnError executes fx when err is not nil,
 // just call it when you need it.
-func (c *Cleaner) OnError(fx CleanErrTask) {
+func (c *Cleaner) OnError(fx CleanTask) {
 	c.onerror = append(c.onerror, fx)
 }
 
@@ -92,5 +105,11 @@ func OnTrue(boolPtr *bool, do func()) {
 func OnFalse(boolPtr *bool, do func()) {
 	if !(*boolPtr) {
 		do()
+	}
+}
+
+func ExecIfSet(funcPtr *func()) {
+	if funcPtr != nil {
+		(*funcPtr)()
 	}
 }

@@ -12,9 +12,7 @@ const (
 	alwaysStr  = "always"
 )
 
-var (
-	errFailed = errors.New("I have failed")
-)
+var errFailed = errors.New("I have failed")
 
 // ExampleFunction just an example function
 func ExampleFunction(fail bool) (usefulthing *string, err error) {
@@ -24,8 +22,8 @@ func ExampleFunction(fail bool) (usefulthing *string, err error) {
 	usefulthing = new(string)
 
 	// (some logic that needs to be executed only if MyFunc returns an error)
-	cleaner.OnError(func(e error) {
-		if e == errFailed {
+	cleaner.OnError(func() {
+		if cleaner.GetError() == errFailed {
 			*usefulthing += ":" + failedStr
 		} else {
 			panic("not my err")
@@ -33,8 +31,8 @@ func ExampleFunction(fail bool) (usefulthing *string, err error) {
 	})
 	// practical context use case:
 	//
-	// 	cleaner.AddOnError(func(e err) {
-	// 		if e == ErrTxFailed {
+	// 	cleaner.AddOnError(func() {
+	// 		if cleaner.GetError() == ErrTxFailed {
 	// 			transaction.Rollback()
 	// 		} else {
 	// 			log.Errorf("failed request ID: %s", reqID)
@@ -82,5 +80,4 @@ func Test(t *testing.T) {
 	if things[2] != failedStr {
 		t.Errorf("second thing should be '%s' instead is '%s'", failedStr, things[2])
 	}
-
 }
