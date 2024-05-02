@@ -51,13 +51,15 @@ func (c *Cleaner) Clean() {
 	for i := len(c.always) - 1; i >= 0; i-- {
 		(c.always[i])()
 	}
-	if (*c.Errptr) == nil {
-		for i := len(c.onnil) - 1; i >= 0; i-- {
-			(c.onnil[i])()
-		}
-	} else {
-		for i := len(c.onerror) - 1; i >= 0; i-- {
-			(c.onerror[i])()
+	if c.Errptr != nil {
+		if (*c.Errptr) == nil {
+			for i := len(c.onnil) - 1; i >= 0; i-- {
+				(c.onnil[i])()
+			}
+		} else {
+			for i := len(c.onerror) - 1; i >= 0; i-- {
+				(c.onerror[i])()
+			}
 		}
 	}
 }
