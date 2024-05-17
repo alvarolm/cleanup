@@ -54,6 +54,8 @@ func (c *Cleaner) Clean() {
 	if c.cleaned {
 		return
 	}
+	c.cleaned = true
+	
 	for i := len(c.always) - 1; i >= 0; i-- {
 		(c.always[i])()
 	}
