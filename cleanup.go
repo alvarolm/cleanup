@@ -4,6 +4,7 @@ type CleanTask func()
 
 // Cleaner holds whatever needs to be done
 type Cleaner struct {
+	cleaned bool
 	onerror []CleanTask
 	onnil   []CleanTask
 	always  []CleanTask
@@ -46,8 +47,13 @@ func NewCleaner(errPtr *error) (c *Cleaner) {
 }
 
 // Clean performs the cleaning,
-// call it as a defer at the beginning of your function.
+// call it as a defer at the beginning of your function
+// or whitin the function context.
+// its executed once, async unsafe.
 func (c *Cleaner) Clean() {
+	if c.cleaned {
+		return
+	}
 	for i := len(c.always) - 1; i >= 0; i-- {
 		(c.always[i])()
 	}
