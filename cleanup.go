@@ -19,6 +19,9 @@ func (c *Cleaner) GetError() error {
 }
 
 func (c *Cleaner) ComplementOrSetErr(complementor func(mainErr error, complementErr ...error) error, complementErr error) {
+	if c.Errptr == nil {
+		return
+	}
 
 	ierr := c.GetError()
 	if ierr != nil {
@@ -34,7 +37,9 @@ func (c *Cleaner) ComplementOrSetErr(complementor func(mainErr error, complement
 }
 
 func (c *Cleaner) SetReturnError(err error) {
-	*c.Errptr = err
+	if c.Errptr != nil {
+		*c.Errptr = err
+	}
 }
 
 // NewCleaner creates a cleanup instance,
@@ -91,35 +96,37 @@ func (c *Cleaner) Always(fx CleanTask) {
 }
 
 func Always(errPtr *error, do func(error)) {
-	do(*errPtr)
+	if errPtr != nil {
+		do(*errPtr)
+	}
 }
 
 func OnError(errPtr *error, do func(error)) {
-	if (*errPtr) != nil {
+	if errPtr != nil && (*errPtr) != nil {
 		do(*errPtr)
 	}
 }
 
 func OnNil(errPtr *error, do func()) {
-	if (*errPtr) == nil {
+	if errPtr != nil && (*errPtr) == nil {
 		do()
 	}
 }
 
 func OnTrue(boolPtr *bool, do func()) {
-	if *boolPtr {
+	if boolPtr != nil && *boolPtr {
 		do()
 	}
 }
 
 func OnFalse(boolPtr *bool, do func()) {
-	if !(*boolPtr) {
+	if boolPtr != nil && !(*boolPtr) {
 		do()
 	}
 }
 
 func ExecIfSet(funcPtr *func()) {
-	if funcPtr != nil {
+	if funcPtr != nil && *funcPtr != nil {
 		(*funcPtr)()
 	}
 }

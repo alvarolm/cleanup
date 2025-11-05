@@ -14,8 +14,8 @@ const (
 
 var errFailed = errors.New("I have failed")
 
-// ExampleFunction just an example function
-func ExampleFunction(fail bool) (usefulthing *string, err error) {
+// SampleFunction just an example function
+func SampleFunction(fail bool) (usefulthing *string, err error) {
 	cleaner := NewCleaner(&err)
 	defer cleaner.Clean()
 
@@ -39,7 +39,7 @@ func ExampleFunction(fail bool) (usefulthing *string, err error) {
 	// 		}
 	// 	})
 
-	// (some logic that needs to be executed only if ExampleFunction returns no error)
+	// (some logic that needs to be executed only if SampleFunction returns no error)
 	cleaner.OnNil(func() {
 		*usefulthing += ":" + successStr
 		uerr := errors.New("updated error")
@@ -65,7 +65,7 @@ func ExampleFunction(fail bool) (usefulthing *string, err error) {
 }
 
 func Test(t *testing.T) {
-	thing, err := ExampleFunction(true)
+	thing, err := SampleFunction(true)
 
 	if err == nil {
 		t.Error("err should return an error")
