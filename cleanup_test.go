@@ -64,7 +64,7 @@ func SampleFunction(fail bool) (usefulthing *string, err error) {
 	return
 }
 
-func Test(t *testing.T) {
+func TestSampleFunction(t *testing.T) {
 	thing, err := SampleFunction(true)
 
 	if err == nil {
